@@ -1,0 +1,34 @@
+name: 🗂️ Upload Archive
+
+on:
+  milestone:
+    types:
+      - closed
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: default-4xlarge
+    steps:
+      - name: Check milestone version format and patch version
+        run: |
+          TITLE="${{ github.event.milestone.title }}"
+          echo "Milestone title: $TITLE"
+
+          # Check format x.y.z
+          if [[ "$TITLE" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            PATCH=$(echo "$TITLE" | cut -d. -f3)
+            if [ "$PATCH" == "0" ]; then
+              echo "✅ Success 유효한 포멧이며 "
+            else
+              echo "❌ ERROR 패치 버전이 0이 아닙니다"
+              exit 1
+            fi
+          else
+            echo "❌ ERROR 마일스톤 명이 숫자.숫자.숫자 형식이 아닙니다. (e.g. 1.2.3)"
+            exit 1
+          fi
+
+      - name: Second Step
+        run: |
+          echo "✅ Second Step 실행 성공"
